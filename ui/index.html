@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自动化插件 · 界面版 v1.3.0</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>自动化插件 · 界面版</h1>
+  <p class="sub">素材包半自动上新 + 批量自动上下架，不用敲终端。版本 v1.3.0</p>
+  <p class="boundary">边界实话：只解析、只出报告，未写入任何目标（零写入）。不连接真实数据库、无常驻轮询；抖音／淘宝／小红书／Shopify／WooCommerce／有赞／SHOPLINE 的写入口未接通，调用会明确拒绝，不返回假成功。</p>
+</header>
+<nav id="tabs">
+  <button data-tab="fields" class="active">一、对字段</button>
+  <button data-tab="dryrun">二、试跑</button>
+  <button data-tab="drafts">三、看草稿和排程</button>
+  <button data-tab="templates">模板管理</button>
+  <button data-tab="reference">参考</button>
+  <button data-tab="onboarding">接入流程</button>
+</nav>
+<main>
+  <!-- 一、对字段 -->
+  <section id="tab-fields" class="tab active">
+    <h2>一、对字段：上传对方店铺样表，核对映射，保存为配置</h2>
+    <div class="card">
+      <h3>1. 上传样表（CSV 或 JSON）</h3>
+      <p>选文件，或把内容粘贴到下面文本框（Excel 请先另存为 CSV 或 JSON 再传）。</p>
+      <input type="file" id="scanFile" accept=".csv,.json">
+      <textarea id="scanText" rows="5" placeholder="粘贴样表内容（CSV 或 JSON）"></textarea>
+      <button id="scanBtn">扫描样表</button>
+      <span id="scanMsg" class="msg"></span>
+      <div id="scanResult"></div>
+    </div>
+    <div class="card">
+      <h3>2. 保存为配置（核对一次，之后复用）</h3>
+      <label>配置名 <input type="text" id="saveProfileName" placeholder="如：测试店"></label>
+      <label>目标 <select id="saveProfileTarget"></select></label>
+      <button id="saveProfileBtn">保存配置</button>
+      <span id="saveProfileMsg" class="msg"></span>
+      <p class="hint">保存前请在上方逐行核对：来源列对不对、价格单位是元还是分（默认按元）。必填 6 项（商品名、分类、价格、库存、主图、运费方式）缺了会保存失败并点名。</p>
+    </div>
+    <div class="card">
+      <h3>3. 从模板建配置</h3>
+      <p>已有专用模板 JSON 文件（generate-template 生成的，或以前的映射配置 .json），直接上传建配置。</p>
+      <input type="file" id="templateFileForProfile" accept=".json">
+      <label>配置名 <input type="text" id="templateProfileName" placeholder="如：我的美妆店"></label>
+      <label>目标（留空按模板自带） <select id="templateProfileTarget"><option value="">按模板自带</option></select></label>
+      <button id="templateProfileBtn">从模板建配置</button>
+      <span id="templateProfileMsg" class="msg"></span>
+    </div>
+    <div class="card">
+      <h3>配置列表</h3>
+      <button id="refreshProfilesBtn">刷新列表</button>
+      <table id="profileList"><thead><tr><th>配置名</th><th>目标</th><th>操作</th></tr></thead><tbody></tbody></table>
+      <div id="profileDetail"></div>
+      <div id="profileEditor" class="hidden">
+        <h4>编辑配置：<span id="editProfileName"></span></h4>
+        <label>目标 <select id="editTarget"></select></label>
+        <label>价格单位 <select id="editPriceUnit"><option value="yuan">元（yuan）</option><option value="fen">分（fen）</option></select></label>
+        <div id="editMapping"></div>
+        <label>运费模板（买家后台已建好的模板登记，每行一个：名，计费方式）<textarea id="editFreight" rows="3" placeholder="默认运费模板，按件"></textarea></label>
+        <label>默认运费模板名（空 = 不设默认） <input type="text" id="editFreightDefault"></label>
+        <button id="editSaveBtn">保存修改</button>
+        <button id="editCancelBtn">取消</button>
+        <span id="editMsg" class="msg"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 二、试跑 -->
+  <section id="tab-dryrun" class="tab">
+    <h2>二、试跑：先看报告，再决定要不要上架</h2>
+    <p class="boundary">只解析、只出报告，未写入任何目标（零写入）。有错误就拒绝导入。</p>
+    <div class="card">
+      <label>配置 <select id="dryProfile"></select></label>
+      <button id="dryRefreshProfilesBtn">刷新配置列表</button>
+      <h3>商品清单（CSV 或 JSON）</h3>
+      <input type="file" id="dryListFile" accept=".csv,.json">
+      <textarea id="dryListText" rows="6" placeholder="粘贴商品清单内容"></textarea>
+      <h3>图片（只传文件名，不上传图片内容）</h3>
+      <input type="file" id="dryImages" multiple accept=".png,.jpg,.jpeg,.webp,.svg,.gif">
+      <span id="dryImageNames" class="hint"></span>
+      <h3>专用模板（可选）</h3>
+      <input type="file" id="dryTemplateFile" accept=".json">
+      <span id="dryTemplateName" class="hint"></span>
+      <div class="row">
+        <button id="dryFillDemoBtn">填入示例</button>
+        <button id="dryBuildDemoProfileBtn">自动建演示配置（测试店）</button>
+        <button id="dryRunBtn">开始试跑</button>
+      </div>
+      <span id="dryMsg" class="msg"></span>
+      <div id="dryResult"></div>
+    </div>
+  </section>
+
+  <!-- 三、看草稿和排程 -->
+  <section id="tab-drafts" class="tab">
+    <h2>三、看草稿和排程</h2>
+    <p class="hint">用“试跑”页选好的配置、清单与图片。没选过就先去“试跑”页填一次，或点下面“填入示例”。</p>
+    <div class="card">
+      <h3>模拟导入（看草稿）</h3>
+      <p id="draftSummary" class="hint">尚未选择配置与清单。</p>
+      <button id="importFakeBtn">模拟导入，看草稿</button>
+      <button id="draftFillDemoBtn">填入示例</button>
+      <span id="importFakeMsg" class="msg"></span>
+      <div id="importFakeResult"></div>
+      <h3>文件包（无后台场景）</h3>
+      <button id="filePackBtn">生成文件包</button>
+      <span id="filePackMsg" class="msg"></span>
+      <div id="filePackResult"></div>
+    </div>
+    <div class="card">
+      <h3>上下架计划与回滚（本地模拟）</h3>
+      <label>状态 JSON（商品上下架状态数组）<textarea id="schedStatus" rows="5" placeholder='[{"id":"p1","name":"纯棉T恤","state":"onShelf","onShelf":false,"locked":false,"stock":60}]'></textarea></label>
+      <label>规则 JSON（上下架规则数组）<textarea id="schedRules" rows="4" placeholder='[{"productIds":["p1"],"shelfAt":"2026-11-14T13:20","soldOutOff":true}]'></textarea></label>
+      <label>现在时间（配置时区的墙上时间，留空用当前时间） <input type="text" id="schedNow" value="2026-11-20T10:00" placeholder="YYYY-MM-DDTHH:mm"></label>
+      <div class="row">
+        <button id="schedFillDemoBtn">填入示例状态与规则</button>
+        <button id="schedPlanBtn">看计划</button>
+        <button id="schedDemoBtn">模拟执行与回滚</button>
+      </div>
+      <span id="schedMsg" class="msg"></span>
+      <div id="schedResult"></div>
+    </div>
+  </section>
+
+  <!-- 模板管理 -->
+  <section id="tab-templates" class="tab">
+    <h2>模板管理：生成、下载、导入、改模板</h2>
+    <div class="card">
+      <h3>1. 生成模板</h3>
+      <p>给一张样表（CSV/JSON），或直接填字段名（一行一个，或逗号分隔），生成专用模板草稿。</p>
+      <input type="file" id="genFile" accept=".csv,.json,.txt,.md">
+      <textarea id="genFields" rows="4" placeholder="直接填字段名：商品名，价格，库存……（一行一个或逗号分隔）"></textarea>
+      <label>模板名 <input type="text" id="genName" value="我的专用模板"></label>
+      <label>目标 <select id="genTarget"></select></label>
+      <button id="genBtn">生成模板</button>
+      <span id="genMsg" class="msg"></span>
+      <div id="genResult"></div>
+    </div>
+    <div class="card">
+      <h3>2. 改模板（JSON 文本编辑＋校验）</h3>
+      <p>把模板 JSON 粘贴进来直接改：fields 里每行的 sourceColumn 改成你表里的列名；categories 改分类；specDims 改维名与取值；freightTemplates 改成你后台已建好的运费模板。改完先校验，再建配置。</p>
+      <textarea id="tplEditText" rows="12" placeholder="粘贴模板 JSON"></textarea>
+      <div class="row">
+        <button id="tplValidateBtn">校验模板</button>
+        <label>配置名 <input type="text" id="tplBuildName" placeholder="如：我的美妆店"></label>
+        <button id="tplBuildBtn">用这个模板建配置</button>
+      </div>
+      <span id="tplMsg" class="msg"></span>
+      <div id="tplResult"></div>
+    </div>
+  </section>
+
+  <!-- 参考 -->
+  <section id="tab-reference" class="tab">
+    <h2>参考：平台与自建店字段映射表</h2>
+    <div class="card">
+      <h3>平台字段映射表</h3>
+      <label>平台 <select id="refPlatform"><option value="douyin">抖音（抖店）</option><option value="taobao">淘宝</option><option value="xiaohongshu">小红书</option></select></label>
+      <button id="refPlatformBtn">查看</button>
+      <div id="refPlatformResult"></div>
+    </div>
+    <div class="card">
+      <h3>自建店字段映射表</h3>
+      <label>平台 <select id="refStore"><option value="shopify">Shopify</option><option value="woocommerce">WooCommerce</option><option value="youzan">有赞</option><option value="shopline">SHOPLINE</option></select></label>
+      <button id="refStoreBtn">查看</button>
+      <div id="refStoreResult"></div>
+    </div>
+  </section>
+
+  <!-- 接入流程 -->
+  <section id="tab-onboarding" class="tab">
+    <h2>接入流程：咱们这边已就绪的，和还等第三方开口的</h2>
+    <p class="boundary">先分清两件事：“咱们这边已就绪”是可以直接用的；“等第三方开口”是指平台／店铺的 API 与授权还没接通，写入口会明确拒绝，不返回假成功。申请链接、审批时限、费用以各平台当期口径为准，这里不写，写“待核实”的就是还没核实到。</p>
+    <div id="onboardingResult"><p class="hint">正在加载……</p></div>
+  </section>
+</main>
+<footer>
+  <p>通用自动化插件 · 界面版 v1.3.0 · 本地运行，不上传数据到任何服务器。凭据只走配置文件，永不进代码与报告。</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

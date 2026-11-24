@@ -1,0 +1,5 @@
+[
+  {"id": "p1", "name": "纯棉T恤", "state": "onShelf", "onShelf": false, "locked": false, "stock": 60},
+  {"id": "p2", "name": "帆布手提袋", "state": "pool", "onShelf": false, "locked": false, "stock": 120},
+  {"id": "p3", "name": "手工香皂", "state": "onShelf", "onShelf": true, "locked": false, "stock": 0}
+]

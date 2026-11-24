@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "profileName": "对方美妆店",
+  "target": "generic-template",
+  "priceUnit": "yuan",
+  "freightTemplates": [
+    {
+      "name": "默认运费模板",
+      "chargeType": "按件",
+      "regions": [
+        {
+          "region": "全国（默认）",
+          "firstUnit": 1,
+          "firstFeeCents": 800,
+          "additionalUnit": 1,
+          "additionalFeeCents": 200
+        }
+      ],
+      "freeThresholdCents": 9900,
+      "note": "示例：改成你后台已建好的模板名与价格；工具只往里填，不另编模板"
+    }
+  ],
+  "freightTemplateDefault": "",
+  "categories": [
+    "美妆"
+  ],
+  "mapping": {
+    "columns": {
+      "name": {
+        "source": "产品名称",
+        "status": "auto"
+      },
+      "category": {
+        "source": "类别",
+        "status": "auto"
+      },
+      "price": {
+        "source": "单价",
+        "status": "auto"
+      },
+      "stock": {
+        "source": "库存",
+        "status": "auto"
+      },
+      "mainImage": {
+        "source": "图片",
+        "status": "auto"
+      },
+      "freightMode": {
+        "source": "邮费方式",
+        "status": "auto"
+      },
+      "description": {
+        "source": null,
+        "status": "missing"
+      },
+      "subtitle": {
+        "source": null,
+        "status": "missing"
+      },
+      "keywords": {
+        "source": null,
+        "status": "missing"
+      }
+    },
+    "specDims": [
+      {
+        "name": "颜色",
+        "source": "颜色",
+        "status": "review"
+      },
+      {
+        "name": "尺寸",
+        "source": "尺寸",
+        "status": "review"
+      }
+    ],
+    "extensions": {
+      "expiry": {
+        "source": "保质期",
+        "status": "auto"
+      },
+      "netContent": {
+        "source": "净含量",
+        "status": "auto"
+      }
+    },
+    "unmapped": [],
+    "missingRequired": [],
+    "needsReview": true
+  },
+  "specSeparator": "/",
+  "specValueSeparator": ",",
+  "imageRules": {
+    "main": [
+      "主图",
+      "main",
+      "cover",
+      "_m."
+    ],
+    "detail": [
+      "详情",
+      "detail",
+      "_d."
+    ],
+    "spec": [
+      "规格图",
+      "spec",
+      "_s."
+    ],
+    "info": [
+      "说明",
+      "尺码",
+      "info",
+      "chart",
+      "_i."
+    ]
+  },
+  "timezone": "Asia/Shanghai",
+  "schedule": {
+    "pollMinutes": 5,
+    "singleRunCap": 50,
+    "sellableStates": [
+      "onShelf"
+    ],
+    "masterSwitch": true
+  }
+}
